@@ -1,0 +1,32 @@
+float xt=1.0,yt=1.0,zt=1.0;
+float x=1.0,y=1.0,z=1.0;
+
+
+
+
+
+mat4  T =mat4 (
+1  ,  0  ,  0 ,   -xt,
+0  ,  1  ,  0  ,  -yt,
+0  ,  0  ,  1  ,  -zt,
+0  ,  0  ,  0  ,  1);
+
+mat4 Rx =mat4 (
+1  ,  0     ,    0       ,   0,
+0  ,  cos(-x) ,  -sin(-x) ,  0,
+0  ,  sin(-x) ,  cos(-x) ,   0,
+0  ,  0      ,   0     ,     1);
+
+mat4 Ry =mat4 (
+cos(-y)  ,  0  ,  sin(-y) ,   0,
+0        ,  1  ,  0       ,   0,
+-sin(-y) ,  0  ,  cos(-y) ,   0,
+0        ,  0  ,  0       ,   1);
+
+mat4 Rz =mat4 (
+cos(-z) ,  -sin(-z), 0 ,  0,
+sin(-z) ,  cos(-z) , 0  ,  0,
+0      ,   0       , 1  ,  0,
+0      ,   0       , 0  ,  1);
+
+mat4 Viewmatrix = Rz * Ry * Rx * T;

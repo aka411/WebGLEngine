@@ -1,0 +1,58 @@
+
+
+1)Geometry generator class contains vertex mass storage
+
+2)That red trail along movement of object is points which are stored in point buffer with size 1024 and overwritten point by point as it rendered again
+
+3)A global vertex buffer is initialized with fixed size at starting itself(vertex buffer owner-> Geometry generator)
+
+4)A struct containg pointer  vertex buffer and indices is passed for rendering
+
+struct GeometryIndices {
+    int BaseIndex;
+    int BaseVertex;
+    int FaceCount;
+
+    dbasic::Vertex *VertexData;
+};
+
+
+5)Is vertex send to gpu every frame? yes!!!
+6)Pool of vertex data in geometry generator is also reset every frame
+7)index is also a pool and using offset for vertex buffer
+8)For some reason "" m_state.currentShape.VertexData = &m_vertexData[m_state.vertexPointer];"" in geometry generator is useless;
+
+
+
+
+
+
+
+/*****Important Data Strucures****/
+
+
+
+struct GeometryIndices {
+    int BaseIndex;
+    int BaseVertex;
+    int FaceCount;
+
+    dbasic::Vertex *VertexData;
+};
+
+
+
+struct Line2dParameters {
+    float x0, y0;
+    float x1, y1;
+    float lineWidth;
+};
+
+
+
+struct Circle2dParameters {
+    float center_x = 0.0f, center_y = 0.0f;
+    float radius = 1.0f;
+    float maxEdgeLength = 0.1f;
+    float smallestAngle = ysMath::Constants::PI * 0.95f;
+};
