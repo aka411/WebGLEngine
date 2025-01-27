@@ -53,8 +53,43 @@ class OrthographicCamera
 
 class PerspectiveCamera
 {
-  constructor()
-  {
+
+
+    constructor(fov,aspectRatio,near,far)
+    {
+/*
+      fov — Camera frustum vertical field of view.
+      aspect — Camera frustum aspect ratio.
+      near — Camera frustum near plane.
+      far — Camera frustum far plane.
+*/
+
+
+
+      this.tanHlf = Math.tan(fov/2);
+      this.n = near;
+      this.f = far ;
+
+      this.nT = near*tanHlf
+
+      this.fT = far * tanHlf;
+
+      this.m = -2/(far-near);
+
+      this.c = 1+(near*-(this.m));
+
+
+
+
+
+      this.ar = aspectRatio;
+
+
+      this.camera = [this.n/this.nT*(1/this.ar),0,0,0,
+                     0,this.n/this.nT,0,0,
+                     0,0,this.m,this.c,
+                     0,0,-1,0 ];
+
 
   }
 

@@ -12,14 +12,17 @@ let renderer = new WebGLRenderer(gl,resouceManager);
 resouceManager.loadShader(vert,frag,"shade");
 
 let shapeGen = new GeometryGenerator();
-const circle = shapeGen.generateCircle(10,5*(6.28/360));
+const circle = shapeGen.generateSphere(10,2);
 
 resouceManager.loadMesh(circle[0],circle[1],"circle","shade");
 
 
 
 const ar = gl.canvas.width/gl.canvas.height;
-let scene = new Scene(ar);
+const dpx = window.devicePixelRatio;
+
+let scene = new Scene(ar *dpx );
+
 //console.log(ar);
 
 
@@ -36,6 +39,9 @@ let scene = new Scene(ar);
 //scene.add(gameObject);
 
 //console.log(gl.canvas.width+' '+gl.canvas.height);
+
+
+/*
 function getMousePos(canvas, evt) {
    var rect = canvas.getBoundingClientRect();
    return {
@@ -51,19 +57,20 @@ function getMousePos(canvas, evt) {
 		//engine.createCircle(DEFAULT_RADIUS, );
 
 
-    const gameObject = new GameObject(new Vec2((((mousePos.x/gl.canvas.width)*400)-200)*ar, (((mousePos.y/gl.canvas.height)*-450)+150)));
-
+  //  const gameObject = new GameObject(new Vec2((((mousePos.x/gl.canvas.width)*400)-200)*ar, (((mousePos.y/gl.canvas.height)*-450)+150)));
+const gameObject = new GameObject(new Vec3(0,0,0));
     gameObject.graphicsComponent = new GraphicsComponent("circle",'shade');
 
     scene.add(gameObject);
 
 }, false);
 
+*/
 
 
 
-
-
+let t = new TouchHandler(gl);
+t.initialize();
 
 
 
@@ -103,8 +110,13 @@ scene.update(dt);
 
 renderer.render(scene);
 
+if(t.checkInput()){
+const gameObject = new GameObject(new Vec3(t.x*200*ar*dpx,t.y*300,-30));
+    gameObject.graphicsComponent = new GraphicsComponent("circle",'shade');
 
+    scene.add(gameObject);
 
+}
 requestAnimationFrame(draw);
 
 }
