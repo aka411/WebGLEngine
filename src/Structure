@@ -1,8 +1,0 @@
-
-GraphicsComponent---------->WebGLResourceManager(Actual vertex Holder)
-
-PhysicsComponent----->PhysicsEngine
-
-CollisionComponent(Simplified Mesh Reference,Tight Fitting Collision Geometry)------->CollisionEngine
-
-GameObject(Bounding Shape)-------->Frutsum Culling,For collsion Calculation

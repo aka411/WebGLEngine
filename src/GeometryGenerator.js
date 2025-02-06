@@ -45,6 +45,14 @@ let i = 0;
 
 
 
+
+
+
+
+
+
+
+
   generateSphere(radius,recursionLevel){
 
 
@@ -57,20 +65,40 @@ let i = 0;
 
 
 	vertex.push(-1, t, 0);
+  vertex.push(0, 0, 0);//space for normals
 
 	vertex.push(1, t, 0);
+  vertex.push(0, 0, 0);
+
 	vertex.push(-1, -t, 0);
+  vertex.push(0, 0, 0);
+
 	vertex.push(1, -t, 0);
+  vertex.push(0, 0, 0);
 
 	vertex.push(0, -1, t);
+  vertex.push(0, 0, 0);
+
 	vertex.push(0, 1, t);
+  vertex.push(0, 0, 0);
+
 	vertex.push(0, -1, -t);
+  vertex.push(0, 0 ,0);
+
 	vertex.push(0, 1, -t);
+  vertex.push(0, 0, 0);
 
 	vertex.push(t, 0, -1);
+  vertex.push(0, 0 ,0);
+
 	vertex.push(t, 0, 1);
+  vertex.push(0, 0, 0);
+
 	vertex.push(-t, 0, -1);
+  vertex.push(0, 0 ,0);
+
 	vertex.push(-t, 0, 1);
+  vertex.push(0, 0, 0);
 
 
 
@@ -149,8 +177,8 @@ let i = 0;
 
 
 
-      const iA = iAIn *3;
-      const iB = iBIn *3;
+      const iA = iAIn *3*2;
+      const iB = iBIn *3*2;
 			let P1 = new Vec3(vertex[iA],vertex[iA+1],vertex[iA+2])
 			let P2 = new Vec3(vertex[iB],vertex[iB+1],vertex[iB+2])
 
@@ -162,24 +190,35 @@ let i = 0;
 
 				P1 = P1.scale(1.0 / lenP1);
 			  P2 = P2.scale(1.0 / lenP2);
+
 				vertex[iA] = P1.scale(radius).x;
         vertex[iA+1] = P1.scale(radius).y;
         vertex[iA+2] = P1.scale(radius).z;
+
+        vertex[iA+3] = P1.x;
+        vertex[iA+4] = P1.y;
+        vertex[iA+5] = P1.z;
+
 
 				vertex[iB] = P2.scale(radius).x;
         vertex[iB+1] = P2.scale(radius).y;
         vertex[iB+2] = P2.scale(radius).z;
 
+        vertex[iB+3] = P2.x;
+        vertex[iB+4] = P2.y;
+        vertex[iB+5] = P2.z;
+
 
 			}
 
-			const verticePrevSize = vertex.length/3;
+			const verticePrevSize = vertex.length/(3*2);
 
 			let bignum = (iA < iB) ? iB : iA;
 			let smallnum = (iA < iB) ? iA : iB;
 
 			let key = (smallnum << 32 )+ bignum;
 
+//to avoid calculating midpoint again for the same edge since two triangles may share the same edge
 			if (dict.get(key)==undefined) {
 
 				const mid_point_vector = P2.sub( P1).scale(0.5).add(P1);
@@ -192,6 +231,7 @@ let i = 0;
 
 				dict[key] = verticePrevSize;
 				vertex.push(final_mid_point_vector.x,final_mid_point_vector.y,final_mid_point_vector.z);
+        vertex.push(unit_mid_point_vector.x,unit_mid_point_vector.y,unit_mid_point_vector.z);
 
 				return verticePrevSize;
 			}
@@ -220,6 +260,10 @@ let i = 0;
 		const  T2 = { Ia,I2,Ib };
 		const  T3 = { Ib,I3,Ic };
 		const  T4= { Ia,Ib,Ic };
+
+
+
+
 
 
 		indices[tri_count] = I1;
@@ -261,6 +305,50 @@ n = Normalize(sphere_surface_point - sphere_center);
 u = atan2(n.x, n.z) / (2*pi) + 0.5;
 v = n.y * 0.5 + 0.5;
 */
+
+return [vertex,indices];
+
+
+
+
+  }
+
+
+  generatePlane(div,width){
+let vertex = new Array();
+let indices = new Array();
+    const triangleSide = width/div;
+    for(let row = 0;row < div+1; row++){
+
+      for(let col = 0; col < div+1;col++){
+
+        const point = new Vec3(col*triangleSide ,0.0,-row*triangleSide);
+
+        vertex.push(point.x-width/2,point.y,point.z+width/2);
+        vertex.push(0,1,0);//placeholder for normal
+
+
+
+      }
+
+    }
+
+    for(let row = 0;row < div; row++){
+
+      for(let col = 0; col < div;col++){
+        const index = row*(div+1)+col;
+
+        indices.push(index,index+(div+1)+1,index+(div+1));
+        indices.push(index,index+1,index+(div+1)+1);
+
+
+
+
+
+      }
+
+    }
+
 
 return [vertex,indices];
 

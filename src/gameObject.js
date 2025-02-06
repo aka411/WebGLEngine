@@ -6,7 +6,7 @@ class GameObject
   {
 
     this.id = 0;
-    this.position = position || new Vec2(0,0);
+    this.position = position || new Vec3(0,0,0);
 
 
 
@@ -14,7 +14,7 @@ class GameObject
 
     this.physicsComponent = new PhysicsComponent();
     this.graphicsComponent = new GraphicsComponent();
-  //  this.collisionComponent = new CollisionComponent();
+  //this.collisionComponent = new CollisionComponent();
 
 
 
@@ -26,7 +26,6 @@ class GameObject
     //input check here
     this.physicsComponent.update(dt,this);
 
-    this.graphicsComponent.updateModel(this);
 
   }
 

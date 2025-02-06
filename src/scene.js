@@ -3,10 +3,10 @@
 
 class Scene
 {
-  constructor(ar)
+  constructor()
   {
     this.list = new Array();
-    this.camera = new OrthographicCamera(200,-200,300,-300,10,-200,ar);
+
     this.collision = new CollisionEngine();
 
 

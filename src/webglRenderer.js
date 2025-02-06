@@ -3,19 +3,16 @@
 class WebGLRenderer
 {
 
-  constructor(gl,res){
+  constructor(gl,res,shaderManager){
     this.gl = gl;
     this.resourceManager=res;
     this.count = 0 ;
+    this.shader = shaderManager;
 
 
   }
 
- drawCircle(radius,postion,color)
-  {
 
-
-  }
 
   setUpBuffers(name)
   {
@@ -23,7 +20,7 @@ class WebGLRenderer
     const indexBuffer = this.resourceManager.indexList[name];
     const positionBuffer = this.resourceManager.verticeList[name];
 
-    this.gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+    this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
     this.count = this.resourceManager.countList[name];
 
@@ -34,28 +31,33 @@ class WebGLRenderer
 
   useMesh(name)
   {
-    //webthis.gl specific mesh setup code
+    //webgl specific mesh setup code
   let vao =  this.resourceManager.meshList[name];
   this.gl.bindVertexArray(vao);
 
   }
 
 
-  useShader(name,scene,i)
+  setUpShader(object,cam)
   {
 
-    let modelMatrix = scene.list[i].graphicsComponent.modelMatrix;
+     this.shader.setTransform(object.physicsComponent.modelMatrix.transpose().m);
+    // console.log(scene.list[i].physicsComponent.modelMatrix.transpose().m);
+     this.shader.setCameraView(cam.getViewMatrix().transpose().m );
+
+  //  console.log(cam.getViewMatrix().transpose().m );
+     this.shader.SetProjection(cam.getProjectionMatrix().transpose().m);
+     this.shader.setLight([-60,100,-30,1],[0,0,1,1],[1,1,0,1]);
 
 
-    //add error handling
-    this.gl.useProgram(this.resourceManager.shaderList[name]);
-    let model = this.gl.getUniformLocation(this.resourceManager.shaderList[name], "modelMatrix");
-    let camera = this.gl.getUniformLocation(this.resourceManager.shaderList[name], "cameraMatrix");
+     this.shader.useShader();
 
-    let cameraMatrix = scene.camera.getCameraMatrix();
 
-    this.gl.uniformMatrix4fv(model,true,modelMatrix);
-    this.gl.uniformMatrix4fv(camera,true,cameraMatrix);
+
+
+
+
+
 
 
 
@@ -63,21 +65,36 @@ class WebGLRenderer
 
   }
 
-  render(scene)
+  render(scene,camera)
   {
-    this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
-    this.gl.clear(gl.COLOR_BUFFER_BIT);
+
+    this.gl.enable(this.gl.DEPTH_TEST);
+    this.gl.clearColor(0.330, 0.330, 0.330, 1.0);
+
+    //this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+    this.gl.clearDepth(1.0);
+
+
+     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+
+
 
     for (let i = 0; i < scene.list.length; i++)
     {
+      //frutsum culling could save some time
 
-      this.useMesh(scene.list[i].graphicsComponent.mesh);
-      this.useShader(scene.list[i].graphicsComponent.shader,scene,i);
-      this.setUpBuffers(scene.list[i].graphicsComponent.mesh);
+      const object = scene.list[i];
+
+      this.useMesh( object.graphicsComponent.mesh);
+      this.setUpShader( object,camera);
+      this.setUpBuffers( object.graphicsComponent.mesh);
+
+
 
     //  this.gl.drawElements(primitiveType, count, indexType, offset);
-
-      this.gl.drawElements(this.gl.TRIANGLES, this.count, this.gl.UNSIGNED_SHORT, 0);
+    this.gl.enable(this.gl.CULL_FACE);
+    this.gl.cullFace(this.gl.BACK);
+    this.gl.drawElements(this.gl.TRIANGLES, this.count, this.gl.UNSIGNED_SHORT, 0);
 
     }
 

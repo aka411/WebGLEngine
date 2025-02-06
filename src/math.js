@@ -78,6 +78,14 @@ class Vec3
     return new Vec3(this.x*s,this.y*s,this.z*s);
   }
 
+  cross(b){
+
+    const a1 = this.x, a2 =this.y ,a3 = this.z;
+    const b1 = b.x, b2 =b.y ,b3 = b.z;
+
+    return new Vec3((a2*b3-a3*b2),-(a1*b3-a3*b1),(a1*b2-a2*b1));
+  }
+
   dot(b)
   {
     return this.x * b.x + this.y * b.y+ this.z * b.z;
@@ -88,6 +96,14 @@ class Vec3
 
     return this.scale(1/length);
   }
+
+
+  normalize(){
+    const length = this.mag();
+
+    return this.scale(1/length);
+  }
+
 
 }
 
@@ -128,12 +144,14 @@ class Vec4{
 class Mat4x4{
 
 constructor(e){
-if(e.length == 0){e = [
-      1, 0, 0, 0,
-      0, 1, 0, 0,
-      0, 0, 1, 0,
-      0, 0, 0, 1
-    ];}
+  if(e === undefined){e = [
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1
+      ];
+
+    }
 
   this.m = [
   e[0], e[1], e[2], e[3],
@@ -152,7 +170,18 @@ getColumn(n){
 
 }
 
+setColumn(n,col){
+  let e = this.m;
 
+  e[n]   = col[0];
+  e[n+4] = col[1];
+  e[n+8] = col[2];
+  e[n+12]= col[3];
+
+  this.m = e;
+
+
+}
 
 setDiagonal(e){
 
@@ -165,7 +194,7 @@ this.m =[e[0], 0, 0, 0,
 
 
 transpose() {
-  let result =  new Matrix4x4();
+  let result =  new Mat4x4();
   let m = this.m, r = result.m;
   r[0] = m[0]; r[1] = m[4]; r[2] = m[8]; r[3] = m[12];
   r[4] = m[1]; r[5] = m[5]; r[6] = m[9]; r[7] = m[13];
@@ -174,8 +203,8 @@ transpose() {
   return result;
 }
 
-mult (right){
-  let  result =  new Matrix();
+mul (right){
+  let  result =  new Mat4x4();
   let a = this.m, b = right.m, r = result.m;
 
   r[0] = a[0] * b[0] + a[1] * b[4] + a[2] * b[8] + a[3] * b[12];
@@ -205,7 +234,7 @@ mult (right){
 
 
 inverse() {
-  let  result =  new Matrix4x4();
+  let  result =  new Mat4x4();
   let m = this.m, r = result.m;
 
   r[0] = m[5]*m[10]*m[15] - m[5]*m[14]*m[11] - m[6]*m[9]*m[15] + m[6]*m[13]*m[11] + m[7]*m[9]*m[14] - m[7]*m[13]*m[10];
@@ -235,7 +264,136 @@ inverse() {
 }
 
 
+class Quaternion {
 
+constructor(w,x,y,z){
+
+  this.x = x || 0;
+  this.y = y || 0;
+  this.z = z || 0;
+  this.w = w || 0;
+
+
+}
+
+static fromVector(w,n){
+
+  return new Quaternion(w,n.x,n.y,n.z);
+}
+
+
+
+scale(s){
+
+  return new Quaternion(this.w*s,this.x*s,this.y*s,this.z*s);
+}
+
+
+mag(){
+
+   return Math.sqrt(this.w**2+this.x**2+this.y**2+this.z**2);
+}
+
+conjugate(){
+
+  return new Quaternion (this.w,-this.x,-this.y,-this.z)
+}
+
+normalize(){
+const mag = this.mag();
+  return this.scale(1/mag);
+}
+
+inverse(){
+const magSqr = (this.w**2+this.x**2+this.y**2+this.z**2);
+
+const conjQuat = new Quaternion (this.w,-this.x,-this.y,-this.z)
+
+  return conjQuat.scale(1/magSqr);
+}
+
+
+mul(q2){
+
+const w1 = this.w,x1=this.x,y1=this.y,z1=this.z ;
+const w2 = q2.w,x2=q2.x,y2=q2.y,z2=q2.z ;
+  return new Quaternion((w1*w2-x1*x2-y1*y2-z1*z2),
+                        (w1*x2+x1*w2+y1*z2-z1*y2),
+                        (w1*y2-x1*z2+y1*w2+z1*x2),
+                        (w1*z2+x1*y2-y1*x2+z1*w2));
+
+
+
+}
+
+getRotationMatrix(){
+//normalize?!!!
+
+  const qw = this.w;
+  const qx = this.x;
+  const qy = this.y;
+  const qz = this.z;
+
+  return new Mat4x4([
+    1.0 - 2.0*qy*qy - 2.0*qz*qz, 2.0*qx*qy - 2.0*qz*qw, 2.0*qx*qz + 2.0*qy*qw, 0.0,
+    2.0*qx*qy + 2.0*qz*qw, 1.0 - 2.0*qx*qx - 2.0*qz*qz, 2.0*qy*qz - 2.0*qx*qw, 0.0,
+    2.0*qx*qz - 2.0*qy*qw, 2.0*qy*qz + 2.0*qx*qw, 1.0 - 2.0*qx*qx - 2.0*qy*qy, 0.0,
+    0.0, 0.0, 0.0, 1.0]);
+
+}
+
+
+
+static eulerToQuaternion(yaw, pitch, roll){
+
+        const qx = Math.sin(roll/2) * Math.cos(pitch/2) * Math.cos(yaw/2) - Math.cos(roll/2) * Math.sin(pitch/2) * Math.sin(yaw/2);
+        const qy = Math.cos(roll/2) * Math.sin(pitch/2) * Math.cos(yaw/2) + Math.sin(roll/2) * Math.cos(pitch/2) * Math.sin(yaw/2);
+        const qz = Math.cos(roll/2) * Math.cos(pitch/2) * Math.sin(yaw/2) - Math.sin(roll/2) * Math.sin(pitch/2) * Math.cos(yaw/2);
+        const qw = Math.cos(roll/2) * Math.cos(pitch/2) * Math.cos(yaw/2) + Math.sin(roll/2) * Math.sin(pitch/2) * Math.sin(yaw/2);
+
+        return new Quaternion(qw ,qx, qy, qz);
+
+
+}
+
+static fromVectors(v1,v2){
+
+
+
+const a = v1.cross(v2);
+
+const m1 = v1.mag();
+const m2 = v2.mag();
+const com = v1.dot(v2)/(m1*m2);
+let angle = 0;
+if(com <-1){angle = Math.PI;}else if(com > 1){angle = 0;}else{angle = Math.acos(com);}
+
+
+return Quaternion.axisAngleToQuaternion(angle,a);
+
+
+
+
+}
+
+
+
+static axisAngleToQuaternion(angleRad,axis){
+
+  const unitAxis = axis.normalize();
+
+  const sinHlf = Math.sin(angleRad/2);
+  const cosHlf = Math.cos(angleRad/2);
+  const qx =axis.x *sinHlf , qy=axis.y*sinHlf , qz = axis.z*sinHlf,qw = cosHlf;
+
+  return new Quaternion(qw,qx,qy,qz);
+
+
+
+
+}
+
+}
 
 
 
