@@ -9,4 +9,8 @@ It also features a custom written physics engine for handling object collision a
 - A geometry generator for generating sphere and plane geometries.
 - A collision engine for detecting sphere-sphere and sphere-plane collisions.
 - A perspective and orthographic camera that can be rotated using mouse and moved by using arrow keys of the keyboard.
+
+## To run it
+-Just clone the project folder to your PC.
+-Then open the index.html file.
   
