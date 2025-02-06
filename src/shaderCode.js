@@ -4,6 +4,7 @@
 
 const vert = `#version 300 es
 
+//precision highp float;
 
 layout(location=0) in vec4 in_Position;
 //layout(location=1) in vec2 in_Tex;
@@ -24,28 +25,13 @@ out vec3 ex_Normal;
 uniform ScreenVariables {
 	mat4 CameraView;
 	mat4 Projection;
+	vec4 CameraEye;
 
 };
 
 uniform ObjectVariables {
 	mat4 Transform;
-	/*
-	vec2 TexOffset;
-	vec2 TexScale;
-	vec4 Scale;
-
 	vec4 BaseColor;
-	vec4 Emission;
-	float SpecularMix;
-	float DiffuseMix;
-	float Metallic;
-	float DiffuseRoughness;
-	float SpecularPower;
-	float IncidentSpecular;
-
-	int ColorReplace;
-	int Lit;
-	*/
 
 };
 
@@ -55,13 +41,14 @@ uniform ObjectVariables {
 
 void main() {
 
-	vec4 finalNormal = vec4(in_Normal.xyz, 0.0);
-  ex_Normal = vec3(finalNormal * Transform);
+
 
    gl_Position = Projection*inverse(CameraView)*Transform* in_Position;
 
 
-ex_Normal=in_Normal;
+
+   ex_Pos = in_Position;
+   ex_Normal = in_Normal;
 
 
 }`;
@@ -79,40 +66,94 @@ in vec3 ex_Normal;
 
 
 
+
+
+uniform ScreenVariables {
+	mat4 CameraView;
+	mat4 Projection;
+	vec4 CameraEye;
+
+};
+
+uniform ObjectVariables {
+	mat4 Transform;
+
+	vec4 BaseColor;
+
+
+};
+
+
+
+
+
 struct Light {
 	vec4 Position;
 	vec4 Color;
-	vec4 Direction;
-	//float Attenuation0;
-  //float Attenuation1;
-  //int FalloffEnabled;
-  //int Active;
+
+
 };
 
 uniform Lighting {
 	Light Lights;
-//vec4 AmbientLighting;
+//  vec4 AmbientLighting;
 };
 
-void main() {
-
-
-	vec3 normal = normalize(ex_Normal.xyz);
-
-
-
-	vec3 u_color = vec3(0.47,0.6,0.5);
-	vec3 u_lightDir =vec3(0.0,-1,0);
-
-	         vec3  lightV   = normalize( -u_lightDir );
-	         float NdotL    = max( 0.0, dot( normal, lightV ) );
-
-	         vec3 lightCol  = (0.2 + 0.8 * NdotL) * u_color;
-	         outColor   = vec4( lightCol.rgb, 1.0 );
 
 
 
 
 
 
-}`;
+
+
+void main(void) {
+
+
+Light light = Lights;
+
+vec3 lightPos	=  vec3(light.Position.xyz);
+vec3 lightColor	= vec3(light.Color.xyz);
+
+
+vec3 objectColor = vec3(BaseColor.xyz);
+
+
+
+vec3 Position = vec3((Transform * ex_Pos).xyz);
+vec3 Normal = vec3(( transpose (inverse(Transform) ) *vec4(ex_Normal,1.0)).xyz);
+
+vec3 viewPos = vec3(CameraEye.xyz);
+
+
+
+	// gouraud shading
+// ------------------------
+
+
+// ambient
+float ambientStrength = 0.1;
+vec3 ambient = ambientStrength * lightColor;
+
+// diffuse
+vec3 norm = normalize(Normal);
+vec3 lightDir = normalize(lightPos - Position);
+float diff = max(dot(norm, lightDir), 0.0);
+vec3 diffuse = diff * lightColor;
+
+// specular
+float specularStrength = 1.0; // this is set higher to better show the effect of Gouraud shading
+vec3 viewDir = normalize(viewPos - Position);
+vec3 reflectDir = reflect(-lightDir, norm);
+float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
+vec3 specular = specularStrength * spec * lightColor;
+
+vec3 LightingColor = ambient + diffuse + specular;
+
+
+
+	outColor =  vec4(LightingColor * objectColor, 1.0);
+
+
+}
+`;

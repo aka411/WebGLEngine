@@ -2,12 +2,19 @@
 
 class GraphicsComponent
 {
-  constructor(meshName,shaderName)
+  constructor(meshName)
     {
       this.mesh = meshName;
-      this.shader = shaderName;
+
+      this.baseColor;
 
 
+
+    }
+
+    setBaseColor(color){
+
+      this.baseColor = color;
     }
 
 

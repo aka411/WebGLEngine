@@ -39,21 +39,25 @@ let camera = new PerspectiveCamera(45,ar,-10,-400 );
 let shapeGen = new GeometryGenerator();
 const sphere = shapeGen.generateSphere(5,3);//radius,subdivision
 const plane = shapeGen.generatePlane(10,50);//div,width
-resouceManager.loadMesh(sphere[0],sphere[1],"sphere","shade");
-resouceManager.loadMesh(plane[0],plane[1],"plane","shade");
+resouceManager.loadMesh(sphere[0],sphere[1],"sphere");
+resouceManager.loadMesh(plane[0],plane[1],"plane");
 
-
+const light = new Light();
+light.setPosition([-100,100,-30,1]);
+light.setColor([1,1,1,1]);
 
 
 let scene = new Scene();
 
+scene.addLight(light);
 
 const gameObject = new GameObject(new Vec3(0,-10,-60));
 
 gameObject.physicsComponent.physicsBody= new PlaneBody(50,50);
 gameObject.physicsComponent.physicsBody.fixed =true;
 gameObject.physicsComponent.invMass = 1/3;
-gameObject.graphicsComponent = new GraphicsComponent("plane",'shade');
+gameObject.graphicsComponent = new GraphicsComponent("plane");
+gameObject.graphicsComponent.setBaseColor([60/255,	66/255	,79/255,1]);
 
 scene.add(gameObject);
 
@@ -176,12 +180,13 @@ const normTouchY =touchCoords.y;
 
 
 
-const gameObject = new GameObject(worldPosition);
+const ballObject = new GameObject(worldPosition);
 
-gameObject.physicsComponent.physicsBody= new SphereBody(5);
-gameObject.graphicsComponent = new GraphicsComponent("sphere",'shade');
-
-scene.add(gameObject);
+ballObject.physicsComponent.physicsBody= new SphereBody(5);
+ballObject.graphicsComponent = new GraphicsComponent("sphere");
+const red =[ 190/255,	16/255,	64/255,1]
+ballObject.graphicsComponent.setBaseColor(red);
+scene.add(ballObject);
 
 }
 

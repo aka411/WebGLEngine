@@ -17,26 +17,28 @@ class ShaderManager
 
 
 
-//screen  variables
+/******screen  variables******/
     this.CameraView;
-    this.Projection;//mat4
-    
-  //  this.CameraEye;// vec4
+    this.Projection;
+    this.CameraEye;
+
   /*
+    // vec4
     vec4 FogColor;
     float FogNear;
     float FogFar;
 */
 
-//object variables
+/*******object variables******/
     this.Transform;//mat4
+    this.BaseColor;
 
 
   /*vec2 TexOffset;
     vec2 TexScale;
     vec4 Scale;
 
-    vec4 BaseColor;
+
     vec4 Emission;
     float SpecularMix;
     float DiffuseMix;
@@ -48,7 +50,7 @@ class ShaderManager
     int ColorReplace;
     int Lit;
 */
-
+/******Lighting**********/
 
     this.Position ;//= { 0.0f, 0.0f, 0.0f, 1.0f };
     this.Color;// = { 0.0f, 0.0f, 0.0f, 1.0f };
@@ -72,6 +74,9 @@ class ShaderManager
     const objectBlockIndex = this.gl.getUniformBlockIndex(program, "ObjectVariables");
     const lightBlockIndex = this.gl.getUniformBlockIndex(program, "Lighting");
 
+    
+
+//hacky code ,setting hardcoded size values is bad ,change it
     this.createUBO(200,screenBlockIndex,"ScreenVariables");
     this.createUBO(100,objectBlockIndex ,"ObjectVariables");
     this.createUBO(100,lightBlockIndex,"Lighting");
@@ -146,6 +151,13 @@ gl.uniformBlockBinding(program,lightBlockIndex,2);
 
 
   }
+
+    setCameraEye(mat){
+      this.CameraEye= new Float32Array(mat);//vec4
+
+
+    }
+
   SetProjection(mat){
     this.Projection = new Float32Array(mat);
   }
@@ -153,17 +165,20 @@ gl.uniformBlockBinding(program,lightBlockIndex,2);
   setTransform(mat){
     this.Transform =  new Float32Array(mat);
   }
+  setBaseColor (mat){
+    this.BaseColor = new Float32Array(mat);
+    }
 
-  setLight(position,color,direction,){
+  addLight(position,color){
 
     const pos = new Float32Array(position);
     const col =  new Float32Array(color);
-    const dir = new Float32Array(direction);
+
 
 
     this.Position =pos;
     this.Color=col;
-    this.Direction=dir;
+    //this.Direction=dir;
 
   }
 
@@ -173,7 +188,7 @@ gl.uniformBlockBinding(program,lightBlockIndex,2);
   //  let lightBuffer = new ArrayBuffer(16*3);
 
     let lightBuffer = this.appendBuffer(this.Position.buffer,this.Color.buffer);
-    lightBuffer = this.appendBuffer(lightBuffer, this.Direction.buffer);
+    //lightBuffer = this.appendBuffer(lightBuffer, this.Direction.buffer);
 
 
 
@@ -184,7 +199,9 @@ gl.uniformBlockBinding(program,lightBlockIndex,2);
   getScreenBuffer(){
   //  let screenBuffer = new ArrayBuffer(4*4*4*2);
 
-    let screenBuffer = this.appendBuffer(this.CameraView.buffer,this.Projection.buffer);
+    let screenBuffer = this.appendBuffer(this.CameraView.buffer , this.Projection.buffer);
+
+    screenBuffer = this.appendBuffer(screenBuffer , this.CameraEye.buffer);
 
 
 
@@ -196,7 +213,7 @@ gl.uniformBlockBinding(program,lightBlockIndex,2);
   getObjectBuffer(){
   //  let objBuffer = new ArrayBuffer(4*4*4);
 
-    let objBuffer =this.Transform.buffer;
+    let objBuffer = this.appendBuffer(this.Transform.buffer , this.BaseColor.buffer );
 
 
     return new Float32Array(objBuffer);
@@ -228,13 +245,13 @@ loadShader(VertCode,FragCode,name)
   this.gl.compileShader(Vert_Shader);
 
   const messagev = this.gl.getShaderInfoLog(Vert_Shader);
-
+  console.log(messagev);
   const Frag_Shader=this.gl.createShader(this.gl.FRAGMENT_SHADER);
   this.gl.shaderSource(Frag_Shader,FragCode);
   this.gl.compileShader(Frag_Shader);
 
   const messagef = this.gl.getShaderInfoLog(Frag_Shader);
-
+  console.log(messagef);
   const Shader_Program= this.gl.createProgram();
   this.gl.attachShader(Shader_Program,Vert_Shader);
   this.gl.attachShader(Shader_Program,Frag_Shader);
@@ -243,7 +260,7 @@ loadShader(VertCode,FragCode,name)
   this.gl.useProgram(Shader_Program);
 
 
-  console.log(messagev);
+
   this.shaderList[name] = Shader_Program;
 
 }

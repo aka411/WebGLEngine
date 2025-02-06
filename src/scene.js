@@ -7,6 +7,8 @@ class Scene
   {
     this.list = new Array();
 
+    this.lightList = new Array();
+
     this.collision = new CollisionEngine();
 
 
@@ -19,6 +21,15 @@ class Scene
     this.list.push(item);
 
   }
+
+
+  addLight(item)
+  {
+
+    this.lightList.push(item);
+
+  }
+
 
   checkCollisions()
   {

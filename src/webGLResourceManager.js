@@ -17,9 +17,9 @@ class WebGLResourceManager
   }
 
 
-  loadMesh(positions,index,name,shaderName)
+  loadMesh(positions,index,name)
   {
-    
+
 //var positionAttributeLocation = this.gl.getAttribLocation(program, "a_position");//remove
 
 // Create a buffer and put three 2d clip space points in it
