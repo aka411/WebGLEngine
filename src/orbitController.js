@@ -2,7 +2,7 @@ class OrbitController{
 
   constructor(){
 
-    //need better way to do this
+    //need a better way to do this
 
     this.c = 10000;//distance from origin to screen
     this.scaleFactor = 10000;
