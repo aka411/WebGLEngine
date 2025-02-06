@@ -10,7 +10,9 @@ It also features a custom written physics engine for handling object collision a
 - A geometry generator for generating sphere and plane geometries.
 - A collision engine for detecting sphere-sphere and sphere-plane collisions.
 - A perspective and orthographic camera that can be rotated using mouse and moved by using arrow keys of the keyboard.
+- Point light support.
 - A custom math library for matrix ,quaternions and vector data structures and operations.
+  
 
 ## To Do
 - Adding frutsum culling for better rendering performance.
