@@ -1,3 +1,3 @@
 # WebGLEngine
 
-![](demo.gif)
+![info](demo.gif)
