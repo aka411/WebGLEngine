@@ -11,6 +11,6 @@ It also features a custom written physics engine for handling object collision a
 - A perspective and orthographic camera that can be rotated using mouse and moved by using arrow keys of the keyboard.
 
 ## To run it
--Just clone the project folder to your PC.
--Then open the index.html file.
+- Just clone the project folder to your PC.
+- Then open the index.html file.
   
