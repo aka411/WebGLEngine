@@ -5,10 +5,20 @@ Entity–component–system (ECS) architectural design pattern is used in design
 It also features a custom written physics engine for handling object collision and response.Below you can see a demo scene from the engine.The camera rotation is done using quaternions. 
 ![Demo scene from game engine](demo.gif)
 
-## Features
+
+## Current Features
 - A geometry generator for generating sphere and plane geometries.
 - A collision engine for detecting sphere-sphere and sphere-plane collisions.
 - A perspective and orthographic camera that can be rotated using mouse and moved by using arrow keys of the keyboard.
+- A custom math library for matrix ,quaternions and vector data structures and operations.
+
+## To Do
+- Adding frutsum culling for better rendering performance.
+- Adding spatial partitioning to optimize collision detection.
+- Adding Shadows.
+- Sorting object render calls to reduce state change
+- Implementing a better scene graph for adding more complex objects.
+
 
 ## To run it
 - Just clone the project folder to your PC.
