@@ -3,7 +3,7 @@ This is a custom 3D game engine that i having been writing in pure JavaScript wi
 
 Entity–component–system (ECS) architectural design pattern is used in designing the game engine.
 It also features a custom written physics engine for handling object collision and response.Below you can see a demo scene from the engine.The camera rotation is done using quaternions. 
-![Demo scene from game engine](demo.gif)
+![Demo scene from game engine](https://github.com/aka411/WebGLEngine/blob/main/demo.gif)
 
 
 ## Current Features
